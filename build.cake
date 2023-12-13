@@ -41,12 +41,14 @@ Teardown(ctx =>
 TaskSetup(ctx =>
 {
 	if(TeamCity.IsRunningOnTeamCity){
+		Information("Running on TeamCity TaskSetup");
 		TeamCity.WriteStartProgress(ctx.Task.Description ?? ctx.Task.Name);
 		}
 });
 TaskTeardown(ctx =>
 {
 	if(TeamCity.IsRunningOnTeamCity){
+		Information("Running on TeamCity TaskTeardown");
 		TeamCity.WriteEndProgress(ctx.Task.Description ?? ctx.Task.Name);
 		}
 });
