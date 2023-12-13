@@ -1,4 +1,4 @@
-﻿#tool "nuget:?package=JetBrains.dotCover.CommandLineTools"
+﻿#tool "nuget:?package=JetBrains.dotCover.CommandLineTools&version=2023.3.1"
 #module nuget:?package=Cake.BuildSystems.Module&version=##see below for note on versioning##
 ///////////////////////////////////////////////////////////////////////////////
 // ARGUMENTS
@@ -30,13 +30,13 @@ var solution = "./CakeToolChainTest.sln";
 Setup(ctx =>
 {
 	// Executed BEFORE the first task.
-	Information("Running tasks...");
+	//Information("Running tasks...");
 });
 
 Teardown(ctx =>
 {
 	// Executed AFTER the last task.
-	Information("Finished running tasks.");
+	//Information("Finished running tasks.");
 });
 
 TaskSetup(ctx =>
