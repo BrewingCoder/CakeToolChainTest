@@ -1,4 +1,5 @@
 ﻿#tool "nuget:?package=JetBrains.dotCover.CommandLineTools"
+#module nuget:?package=Cake.BuildSystems.Module&version=##see below for note on versioning##
 ///////////////////////////////////////////////////////////////////////////////
 // ARGUMENTS
 ///////////////////////////////////////////////////////////////////////////////
@@ -41,14 +42,12 @@ Teardown(ctx =>
 TaskSetup(ctx =>
 {
 	if(TeamCity.IsRunningOnTeamCity){
-		Information("Running on TeamCity TaskSetup");
 		TeamCity.WriteStartProgress(ctx.Task.Description ?? ctx.Task.Name);
 		}
 });
 TaskTeardown(ctx =>
 {
 	if(TeamCity.IsRunningOnTeamCity){
-		Information("Running on TeamCity TaskTeardown");
 		TeamCity.WriteEndProgress(ctx.Task.Description ?? ctx.Task.Name);
 		}
 });
