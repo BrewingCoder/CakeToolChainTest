@@ -1,5 +1,10 @@
-﻿#tool "nuget:?package=JetBrains.dotCover.CommandLineTools&version=2023.3.1"
-#module nuget:?package=Cake.BuildSystems.Module&version=##see below for note on versioning##
+﻿//#addin nuget:?package=NUnit.ConsoleRunner&version=3.16.3
+#tool nuget:?package=NUnit.ConsoleRunner&version=3.16.3
+#tool nuget:?package=NUnit.Extension.TeamCityEventListener
+#tool "nuget:?package=JetBrains.dotCover.CommandLineTools&version=2023.3.1"
+#module "nuget:?package=Cake.BuildSystems.Module&version=6.1.0"
+
+
 ///////////////////////////////////////////////////////////////////////////////
 // ARGUMENTS
 ///////////////////////////////////////////////////////////////////////////////
@@ -94,14 +99,31 @@ Task("Build")
 		});
 	});
 
-
+Task("Test")
+.Description("Runs tests.")
+.IsDependentOn("Build")
+.Does(() => {
+		DotCoverCover(tool => {
+			tool.DotNetTest(
+			  "./SimpleDLL.Nunit.Tests/SimpleDLL.Nunit.Tests.csproj",
+				new DotNetTestSettings() {                    
+					Configuration = configuration,
+					NoBuild = true,
+					NoRestore = true
+				});
+		},
+		new FilePath("./result.dcvr"),
+		new DotCoverCoverSettings()
+				.WithFilter("+:*"));	
+});
 
 Task("Default")
 .IsDependentOn("Clean")
 .IsDependentOn("Restore-NuGet-Packages")
 .IsDependentOn("Build")
+.IsDependentOn("Test")
 .Does(() => {
-	Information("Hello Cake!");
+	
 });
 
 RunTarget(target);
