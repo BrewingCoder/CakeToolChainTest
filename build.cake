@@ -1,10 +1,10 @@
 ﻿//#addin nuget:?package=NUnit.ConsoleRunner&version=3.16.3
 #tool nuget:?package=NUnit.ConsoleRunner&version=3.16.3
 #tool nuget:?package=NUnit.Extension.TeamCityEventListener
-#tool "nuget:?package=JetBrains.dotCover.CommandLineTools&version=2023.3.1"
+//#tool "nuget:?package=JetBrains.dotCover.CommandLineTools&version=2023.3.1"
 #module "nuget:?package=Cake.BuildSystems.Module&version=6.1.0"
 #addin nuget:?package=Cake.Coverlet
-
+#tool dotnet:?package=coverlet.console&version=6.0.0
 
 ///////////////////////////////////////////////////////////////////////////////
 // ARGUMENTS
