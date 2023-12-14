@@ -1,9 +1,9 @@
 ﻿//#addin nuget:?package=NUnit.ConsoleRunner&version=3.16.3
-#tool nuget:?package=NUnit.ConsoleRunner&version=3.16.3
-#tool nuget:?package=NUnit.Extension.TeamCityEventListener
-//#tool "nuget:?package=JetBrains.dotCover.CommandLineTools&version=2023.3.1"
+//#tool nuget:?package=NUnit.ConsoleRunner&version=3.16.3
+//#tool nuget:?package=NUnit.Extension.TeamCityEventListener
+#tool "nuget:?package=JetBrains.dotCover.CommandLineTools&version=2023.3.1"
 #module "nuget:?package=Cake.BuildSystems.Module&version=6.1.0"
-#addin nuget:?package=Cake.Coverlet
+#addin nuget:?package=Cake.Coverlet&version=3.0.4
 #tool dotnet:?package=coverlet.console&version=6.0.0
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -100,7 +100,7 @@ Task("Build")
 		});
 	});
 
-Task("Test")
+Task("TestCoverlet")
 .Description("Runs tests.")
 .IsDependentOn("Build")
 .Does(() => {
@@ -111,8 +111,22 @@ Task("Test")
 			CoverletOutputName = $"results-{DateTime.UtcNow:dd-MM-yyyy-HH-mm-ss-FFF}"
 		};
 		var testSettings = new DotNetTestSettings {};
-		//DotNetTest("./SimpleDLL.Nunit.Tests/bin/debug/net8.0/SimpleDLL.Nunit.Tests.dll", testSettings,coverletSettings);
-		Coverlet("./SimpleDLL.Nunit.Tests/bin/debug/net8.0/SimpleDLL.Nunit.Tests.dll","./SimpleDLL.Nunit.Tests/SimpleDLL.Nunit.Tests.csproj",coverletSettings);
+		DotNetTest("./SimpleDLL.Nunit.Tests/bin/debug/net8.0/SimpleDLL.Nunit.Tests.dll", testSettings,coverletSettings);
+		//Coverlet("./SimpleDLL.Nunit.Tests/bin/debug/net8.0/SimpleDLL.Nunit.Tests.dll","./SimpleDLL.Nunit.Tests/SimpleDLL.Nunit.Tests.csproj",coverletSettings);
+	
+});
+Task("TestDotCover")
+.Description("Runs tests.")
+.IsDependentOn("Build")
+.Does(() => {
+		var dotCoverCoverSettings = new DotCoverCoverSettings();
+			dotCoverCoverSettings.WithAttributeFilter( "System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverageAttribute" );
+
+		var testSettings = new DotNetTestSettings {};
+		
+		DotCoverCover( (tool) =>{
+			tool.DotNetTest("./SimpleDLL.Nunit.Tests/bin/debug/net8.0/SimpleDLL.Nunit.Tests.dll", testSettings);
+			},"./artifacts/results.dcvr",dotCoverCoverSettings);
 	
 });
 
@@ -120,7 +134,7 @@ Task("Default")
 .IsDependentOn("Clean")
 .IsDependentOn("Restore-NuGet-Packages")
 .IsDependentOn("Build")
-.IsDependentOn("Test")
+.IsDependentOn("TestDotCover")
 .Does(() => {
 	
 });
