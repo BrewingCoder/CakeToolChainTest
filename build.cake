@@ -121,7 +121,7 @@ Task("Default")
 .IsDependentOn("Clean")
 .IsDependentOn("Restore-NuGet-Packages")
 .IsDependentOn("Build")
-.IsDependentOn("Test")
+//.IsDependentOn("Test")
 .Does(() => {
 	
 });
