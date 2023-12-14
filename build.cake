@@ -3,6 +3,7 @@
 #tool nuget:?package=NUnit.Extension.TeamCityEventListener
 #tool "nuget:?package=JetBrains.dotCover.CommandLineTools&version=2023.3.1"
 #module "nuget:?package=Cake.BuildSystems.Module&version=6.1.0"
+#addin nuget:?package=Cake.Coverlet
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -103,25 +104,23 @@ Task("Test")
 .Description("Runs tests.")
 .IsDependentOn("Build")
 .Does(() => {
-		DotCoverCover(tool => {
-			tool.DotNetTest(
-			  "./SimpleDLL.Nunit.Tests/SimpleDLL.Nunit.Tests.csproj",
-				new DotNetTestSettings() {                    
-					Configuration = configuration,
-					NoBuild = true,
-					NoRestore = true
-				});
-		},
-		new FilePath("./result.dcvr"),
-		new DotCoverCoverSettings()
-				.WithFilter("+:*"));	
+		var coverletSettings = new CoverletSettings {
+	        CollectCoverage = true,
+		    CoverletOutputFormat = CoverletOutputFormat.teamcity,
+			CoverletOutputDirectory = Directory(artifactsFolder),
+			CoverletOutputName = $"results-{DateTime.UtcNow:dd-MM-yyyy-HH-mm-ss-FFF}"
+		};
+		var testSettings = new DotNetTestSettings {};
+		//DotNetTest("./SimpleDLL.Nunit.Tests/bin/debug/net8.0/SimpleDLL.Nunit.Tests.dll", testSettings,coverletSettings);
+		Coverlet("./SimpleDLL.Nunit.Tests/bin/debug/net8.0/SimpleDLL.Nunit.Tests.dll","./SimpleDLL.Nunit.Tests/SimpleDLL.Nunit.Tests.csproj",coverletSettings);
+	
 });
 
 Task("Default")
 .IsDependentOn("Clean")
 .IsDependentOn("Restore-NuGet-Packages")
 .IsDependentOn("Build")
-//.IsDependentOn("Test")
+.IsDependentOn("Test")
 .Does(() => {
 	
 });
